@@ -1,27 +1,34 @@
 let http = require('http');
-
-//Peticion -> Request
-
-//Respuesta del servidor -> response
-/*http.createServer((req,res)=>{
-    console.log('El servidor se ha iniciado en el puerto 9000');
-    res.write('Bienvenido a la página de prueba');
-    res.end();
-}).listen(9000);*/
-
+let fs = require('fs');
 http.createServer((req,res) => {
     res.setHeader("Content-Type","text/html; charset=utf-8");
-    if(req.url == '/'){
-        res.setHeader("Content-Type","text/html");
-        res.write("<h1>Hola mundo</h1>");
-    }else if(req.url == '/usuarios'){
-        res.setHeader("Content-Type","application/json; charset=utf-8");
-        let users = [
-            {name:"Carmona",val:"0"},
-            {name:"Andrei",val:"10"}
-        ]
-        res.write(JSON.stringify(users));
+    let path = '';
+    switch(req.url){
+        case "/":
+            path = '/index.html';
+        break;
+        case "/nosotros":
+            path = '/about.html';
+        break;
+        case "/proyectos":
+            path = '/projects.html';
+        break;
+        case "/contacto":
+            path = '/contact.html';
+        break;
+        case "/favicon.ico":
+            path = '/fav.png';
+        break;
+        default:
+            path = '/404.html';
+        break;
     }
-    res.end();
-    
+    fs.readFile(`./vistas/${path}`,(err,cont) =>{
+        if(!err){
+            res.write(cont);
+        }else{
+            res.write("<h1>404</h1>");
+        }
+        res.end();
+    });
 }).listen(8080);
